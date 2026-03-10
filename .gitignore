@@ -1,0 +1,27 @@
+# Virtual environment
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Data files (raw captures)
+data/*.pcap
+data/*.csv
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Results (generated at runtime)
+results/*.png
+results/*.json
