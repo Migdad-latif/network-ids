@@ -1,35 +1,35 @@
 [
   {
-    "timestamp": "2026-03-11 07:56:40",
+    "timestamp": "2026-03-11 08:54:43",
     "attack_type": "PORT_SCAN",
     "severity": "HIGH",
     "src_ip": "192.168.1.214",
-    "description": "Possible port scan detected. Source contacted 17 unique destination ports.",
+    "description": "Possible port scan detected. Source contacted 49 unique destination ports.",
     "evidence": {
-      "unique_dst_ports": 17,
+      "unique_dst_ports": 49,
       "threshold": 10
     }
   },
   {
-    "timestamp": "2026-03-11 07:56:40",
+    "timestamp": "2026-03-11 08:54:43",
     "attack_type": "PORT_SCAN",
     "severity": "HIGH",
     "src_ip": "192.168.1.67",
-    "description": "Possible port scan detected. Source contacted 16 unique destination ports.",
+    "description": "Possible port scan detected. Source contacted 46 unique destination ports.",
     "evidence": {
-      "unique_dst_ports": 16,
+      "unique_dst_ports": 46,
       "threshold": 10
     }
   },
   {
-    "timestamp": "2026-03-11 07:56:40",
+    "timestamp": "2026-03-11 08:54:43",
     "attack_type": "SYN_FLOOD",
     "severity": "CRITICAL",
     "src_ip": "192.168.1.67",
-    "description": "Possible SYN flood. Source sent 22 packets with average size 70.5 bytes.",
+    "description": "Possible SYN flood. Source sent 139 packets with average size 70.0 bytes.",
     "evidence": {
-      "packet_count": 22,
-      "avg_packet_size": 70.55,
+      "packet_count": 139,
+      "avg_packet_size": 70.0,
       "thresholds": {
         "min_packets": 20,
         "max_avg_size": 100
@@ -37,47 +37,25 @@
     }
   },
   {
-    "timestamp": "2026-03-11 07:56:40",
+    "timestamp": "2026-03-11 08:54:43",
     "attack_type": "SENSITIVE_PORT_ACCESS",
-    "severity": "MEDIUM",
+    "severity": "CRITICAL",
     "src_ip": "192.168.1.67",
-    "description": "Access attempt to sensitive port 8080 (HTTP-Alt).",
+    "description": "Access attempt to sensitive port 22 (SSH).",
     "evidence": {
-      "dst_port": 8080,
-      "service": "HTTP-Alt"
+      "dst_port": 22,
+      "service": "SSH"
     }
   },
   {
-    "timestamp": "2026-03-11 07:56:40",
+    "timestamp": "2026-03-11 08:54:43",
     "attack_type": "SENSITIVE_PORT_ACCESS",
     "severity": "MEDIUM",
-    "src_ip": "192.168.1.67",
-    "description": "Access attempt to sensitive port 25 (SMTP).",
+    "src_ip": "192.168.1.214",
+    "description": "Access attempt to sensitive port 53 (DNS).",
     "evidence": {
-      "dst_port": 25,
-      "service": "SMTP"
-    }
-  },
-  {
-    "timestamp": "2026-03-11 07:56:40",
-    "attack_type": "SENSITIVE_PORT_ACCESS",
-    "severity": "MEDIUM",
-    "src_ip": "192.168.1.67",
-    "description": "Access attempt to sensitive port 3306 (MySQL).",
-    "evidence": {
-      "dst_port": 3306,
-      "service": "MySQL"
-    }
-  },
-  {
-    "timestamp": "2026-03-11 07:56:40",
-    "attack_type": "SENSITIVE_PORT_ACCESS",
-    "severity": "MEDIUM",
-    "src_ip": "192.168.1.67",
-    "description": "Access attempt to sensitive port 23 (Telnet).",
-    "evidence": {
-      "dst_port": 23,
-      "service": "Telnet"
+      "dst_port": 53,
+      "service": "DNS"
     }
   }
 ]

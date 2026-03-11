@@ -2,91 +2,75 @@
   NETWORK INTRUSION DETECTION SYSTEM
   Alert Session Report
 ======================================================================
-  Generated  : 2026-03-11 08:11:49
+  Generated  : 2026-03-11 08:54:43
   Duration   : 0:00:00
-  Total Alerts : 7
+  Total Alerts : 5
   Highest Severity : CRITICAL
 
 ----------------------------------------------------------------------
   SEVERITY BREAKDOWN
 ----------------------------------------------------------------------
-  CRITICAL   :    1  █
+  CRITICAL   :    2  ██
   HIGH       :    2  ██
-  MEDIUM     :    4  ████
+  MEDIUM     :    1  █
   LOW        :    0  
 
 ----------------------------------------------------------------------
   ATTACK TYPE BREAKDOWN
 ----------------------------------------------------------------------
-  SENSITIVE_PORT_ACCESS          : 4 alert(s)
   PORT_SCAN                      : 2 alert(s)
+  SENSITIVE_PORT_ACCESS          : 2 alert(s)
   SYN_FLOOD                      : 1 alert(s)
 
 ----------------------------------------------------------------------
   TOP ATTACKING IPs
 ----------------------------------------------------------------------
-  192.168.1.67         : 6 alert(s)
-  192.168.1.214        : 1 alert(s)
+  192.168.1.67         : 3 alert(s)
+  192.168.1.214        : 2 alert(s)
 
 ----------------------------------------------------------------------
   FULL ALERT LOG
 ----------------------------------------------------------------------
 
   Alert #1
-  Timestamp   : 2026-03-11 07:56:40
+  Timestamp   : 2026-03-11 08:54:43
   Type        : PORT_SCAN
   Severity    : HIGH
   Source IP   : 192.168.1.214
-  Description : Possible port scan detected. Source contacted 17 unique destination ports.
-  Evidence    : {'unique_dst_ports': 17, 'threshold': 10}
+  Description : Possible port scan detected. Source contacted 49 unique destination ports.
+  Evidence    : {'unique_dst_ports': 49, 'threshold': 10}
 
   Alert #2
-  Timestamp   : 2026-03-11 07:56:40
+  Timestamp   : 2026-03-11 08:54:43
   Type        : PORT_SCAN
   Severity    : HIGH
   Source IP   : 192.168.1.67
-  Description : Possible port scan detected. Source contacted 16 unique destination ports.
-  Evidence    : {'unique_dst_ports': 16, 'threshold': 10}
+  Description : Possible port scan detected. Source contacted 46 unique destination ports.
+  Evidence    : {'unique_dst_ports': 46, 'threshold': 10}
 
   Alert #3
-  Timestamp   : 2026-03-11 07:56:40
+  Timestamp   : 2026-03-11 08:54:43
   Type        : SYN_FLOOD
   Severity    : CRITICAL
   Source IP   : 192.168.1.67
-  Description : Possible SYN flood. Source sent 22 packets with average size 70.5 bytes.
-  Evidence    : {'packet_count': 22, 'avg_packet_size': 70.55, 'thresholds': {'min_packets': 20, 'max_avg_size': 100}}
+  Description : Possible SYN flood. Source sent 139 packets with average size 70.0 bytes.
+  Evidence    : {'packet_count': 139, 'avg_packet_size': 70.0, 'thresholds': {'min_packets': 20, 'max_avg_size': 100}}
 
   Alert #4
-  Timestamp   : 2026-03-11 07:56:40
+  Timestamp   : 2026-03-11 08:54:43
   Type        : SENSITIVE_PORT_ACCESS
-  Severity    : MEDIUM
+  Severity    : CRITICAL
   Source IP   : 192.168.1.67
-  Description : Access attempt to sensitive port 8080 (HTTP-Alt).
-  Evidence    : {'dst_port': 8080, 'service': 'HTTP-Alt'}
+  Description : Access attempt to sensitive port 22 (SSH).
+  Evidence    : {'dst_port': 22, 'service': 'SSH'}
 
   Alert #5
-  Timestamp   : 2026-03-11 07:56:40
+  Timestamp   : 2026-03-11 08:54:43
   Type        : SENSITIVE_PORT_ACCESS
   Severity    : MEDIUM
-  Source IP   : 192.168.1.67
-  Description : Access attempt to sensitive port 25 (SMTP).
-  Evidence    : {'dst_port': 25, 'service': 'SMTP'}
-
-  Alert #6
-  Timestamp   : 2026-03-11 07:56:40
-  Type        : SENSITIVE_PORT_ACCESS
-  Severity    : MEDIUM
-  Source IP   : 192.168.1.67
-  Description : Access attempt to sensitive port 3306 (MySQL).
-  Evidence    : {'dst_port': 3306, 'service': 'MySQL'}
-
-  Alert #7
-  Timestamp   : 2026-03-11 07:56:40
-  Type        : SENSITIVE_PORT_ACCESS
-  Severity    : MEDIUM
-  Source IP   : 192.168.1.67
-  Description : Access attempt to sensitive port 23 (Telnet).
-  Evidence    : {'dst_port': 23, 'service': 'Telnet'}
+  Source IP   : 192.168.1.214
+  Description : Access attempt to sensitive port 53 (DNS).
+  Evidence    : {'dst_port': 53, 'service': 'DNS'}
 
 ======================================================================
   END OF REPORT
