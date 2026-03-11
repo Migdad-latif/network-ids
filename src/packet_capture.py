@@ -109,7 +109,7 @@ def save_to_csv(packets, filepath=OUTPUT_FILE):
 
 # ── Main Capture Function ──────────────────────────────────────────────────────
 
-def start_capture(packet_count=50, interface=None):
+def start_capture(packet_count=500, interface=None):   # ← updated: 50 → 500
     """
     Starts live packet capture.
 
@@ -150,4 +150,4 @@ def start_capture(packet_count=50, interface=None):
 # ── Entry Point ────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
-    start_capture(packet_count=50)
+    start_capture(packet_count=500)   # ← updated: 50 → 500
