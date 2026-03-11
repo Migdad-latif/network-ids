@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIDS SIEM Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-0      : #000000;
+    --bg-1      : #0a0a0a;
+    --bg-2      : #111111;
+    --bg-3      : #1a1a1a;
+    --green-0   : #00ff41;
+    --green-1   : #00cc33;
+    --green-2   : #009922;
+    --green-dim : #003311;
+    --red       : #ff3333;
+    --amber     : #ffaa00;
+    --blue      : #0088ff;
+    --purple    : #aa44ff;
+    --text-dim  : #447744;
+    --border    : #003300;
+    --font      : 'Courier New', Courier, monospace;
+  }
+
+  body {
+    background : var(--bg-0);
+    color      : var(--green-0);
+    font-family: var(--font);
+    font-size  : 12px;
+    overflow-x : hidden;
+  }
+
+  ::-webkit-scrollbar       { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-1); }
+  ::-webkit-scrollbar-thumb { background: var(--green-2); }
+
+  /* ── Header ─────────────────────────────────────────────────────────── */
+  #header {
+    display        : flex;
+    align-items    : center;
+    justify-content: space-between;
+    padding        : 10px 18px;
+    background     : var(--bg-1);
+    border-bottom  : 1px solid var(--border);
+    position       : sticky;
+    top            : 0;
+    z-index        : 100;
+    transition     : border-color 0.3s;
+  }
+
+  #header .logo {
+    font-size     : 16px;
+    font-weight   : bold;
+    color         : var(--green-0);
+    text-shadow   : 0 0 10px var(--green-0);
+    letter-spacing: 2px;
+  }
+
+  #header .logo span { color: var(--text-dim); font-size: 11px; }
+
+  .hstats { display: flex; gap: 24px; align-items: center; }
+
+  .hstat { display: flex; flex-direction: column; align-items: center; }
+
+  .hstat .val {
+    font-size  : 20px;
+    font-weight: bold;
+    color      : var(--green-0);
+    text-shadow: 0 0 8px var(--green-0);
+    transition : color 0.3s;
+  }
+
+  .hstat .lbl { font-size: 9px; color: var(--text-dim); letter-spacing: 1px; }
+  .hstat.alert-stat .val { color: var(--red); text-shadow: 0 0 8px var(--red); }
+
+  #live-indicator { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--green-1); }
+
+  .pulse {
+    width        : 8px;
+    height       : 8px;
+    border-radius: 50%;
+    background   : var(--green-0);
+    box-shadow   : 0 0 6px var(--green-0);
+    animation    : pulse 1.2s infinite;
+  }
+
+  .pulse.offline   { background: #ff3333; box-shadow: 0 0 6px #ff3333; animation: none; }
+  .pulse.connecting{ background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1;   transform: scale(1);    }
+    50%      { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  /* ── Grid ────────────────────────────────────────────────────────────── */
+  #grid {
+    display              : grid;
+    grid-template-columns: 320px 1fr;
+    grid-template-rows   : auto auto;
+    gap                  : 1px;
+    background           : var(--border);
+    height               : calc(100vh - 48px);
+  }
+
+  .panel {
+    background    : var(--bg-1);
+    display       : flex;
+    flex-direction: column;
+    overflow      : hidden;
+  }
+
+  .panel-title {
+    padding        : 7px 12px;
+    background     : var(--bg-2);
+    border-bottom  : 1px solid var(--border);
+    font-size      : 10px;
+    letter-spacing : 2px;
+    color          : var(--green-1);
+    display        : flex;
+    align-items    : center;
+    justify-content: space-between;
+    flex-shrink    : 0;
+  }
+
+  .panel-title .count {
+    background   : var(--green-dim);
+    color        : var(--green-0);
+    padding      : 1px 6px;
+    border-radius: 2px;
+    font-size    : 10px;
+  }
+
+  /* ── Alert Panel ─────────────────────────────────────────────────────── */
+  #alert-panel { grid-column: 1; grid-row: 1; max-height: 55vh; }
+
+  #alert-list { overflow-y: auto; flex: 1; padding: 4px; }
+
+  .alert-item {
+    padding      : 6px 8px;
+    margin-bottom: 3px;
+    border-left  : 3px solid var(--green-2);
+    background   : var(--bg-2);
+    animation    : slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0);     }
+  }
+
+  .alert-item.CRITICAL { border-color: var(--red);    }
+  .alert-item.HIGH     { border-color: var(--amber);  }
+  .alert-item.MEDIUM   { border-color: var(--blue);   }
+  .alert-item.LOW      { border-color: var(--green-2);}
+
+  .alert-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+
+  .sev-badge { font-size: 9px; font-weight: bold; padding: 1px 5px; border-radius: 2px; letter-spacing: 1px; }
+  .sev-badge.CRITICAL { background: var(--red);    color: #000; }
+  .sev-badge.HIGH     { background: var(--amber);  color: #000; }
+  .sev-badge.MEDIUM   { background: var(--blue);   color: #000; }
+  .sev-badge.LOW      { background: var(--green-2);color: #000; }
+
+  .alert-type { font-size: 11px; font-weight: bold; color: var(--green-0); }
+  .alert-time { font-size: 9px; color: var(--text-dim); }
+  .alert-src  { font-size: 10px; color: var(--amber); }
+  .alert-desc { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+
+  /* ── Top Talkers ─────────────────────────────────────────────────────── */
+  #talkers-panel { grid-column: 1; grid-row: 2; }
+  #talkers-list  { padding: 8px; overflow-y: auto; flex: 1; }
+
+  .talker-row    { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .talker-ip     { width: 110px; font-size: 10px; color: var(--green-1); flex-shrink: 0; }
+
+  .talker-bar-wrap { flex: 1; height: 10px; background: var(--bg-3); border-radius: 1px; overflow: hidden; }
+
+  .talker-bar {
+    height       : 100%;
+    background   : var(--green-2);
+    border-radius: 1px;
+    transition   : width 0.5s ease;
+    box-shadow   : 0 0 4px var(--green-2);
+  }
+
+  .talker-bar.top { background: var(--red); box-shadow: 0 0 4px var(--red); }
+  .talker-count   { font-size: 10px; color: var(--text-dim); width: 32px; text-align: right; flex-shrink: 0; }
+
+  /* ── Packet Feed ──────────────────────────────────────────────────────── */
+  #packet-panel      { grid-column: 2; grid-row: 1; max-height: 55vh; }
+  #packet-table-wrap { overflow-y: auto; flex: 1; }
+
+  table          { width: 100%; border-collapse: collapse; font-size: 11px; }
+
+  thead th {
+    position     : sticky;
+    top          : 0;
+    background   : var(--bg-3);
+    color        : var(--text-dim);
+    padding      : 5px 8px;
+    text-align   : left;
+    font-weight  : normal;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+    z-index      : 10;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #0a0a0a;
+    animation    : fadeRow 0.4s ease;
+  }
+
+  @keyframes fadeRow {
+    from { background: var(--green-dim); }
+    to   { background: transparent;      }
+  }
+
+  tbody tr:hover { background: var(--bg-3); }
+  tbody td       { padding: 4px 8px; color: var(--green-1); }
+
+  td.proto-TCP   { color: var(--blue);    }
+  td.proto-UDP   { color: var(--purple);  }
+  td.proto-ICMP  { color: var(--amber);   }
+  td.proto-OTHER { color: var(--text-dim);}
+  td.ip          { color: var(--green-0); font-size: 10px; }
+  td.port        { color: var(--text-dim);}
+  td.size        { color: var(--green-2); }
+  td.time        { color: var(--text-dim); font-size: 10px; }
+
+  /* ── Charts ───────────────────────────────────────────────────────────── */
+  #charts-panel  { grid-column: 2; grid-row: 2; }
+  #charts-inner  { display: flex; height: 100%; gap: 1px; }
+
+  .chart-box {
+    flex          : 1;
+    padding       : 8px;
+    display       : flex;
+    flex-direction: column;
+    min-width     : 0;
+    background    : var(--bg-1);
+  }
+
+  .chart-label   { font-size: 9px; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 4px; text-align: center; }
+  .chart-box canvas { flex: 1; min-height: 0; }
+
+  .empty-msg     { color: var(--text-dim); text-align: center; padding: 20px; font-size: 11px; }
+
+  /* ── Reconnect banner ─────────────────────────────────────────────────── */
+  #reconnect-banner {
+    display    : none;
+    position   : fixed;
+    bottom     : 12px;
+    left       : 50%;
+    transform  : translateX(-50%);
+    background : #1a0000;
+    border     : 1px solid var(--red);
+    color      : var(--red);
+    padding    : 8px 20px;
+    font-size  : 11px;
+    letter-spacing: 1px;
+    z-index    : 9999;
+    animation  : blink 1s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1;   }
+    50%      { opacity: 0.5; }
+  }
+
+  /* ── Scanline effect ──────────────────────────────────────────────────── */
+  body::after {
+    content       : '';
+    position      : fixed;
+    top           : -100%;
+    left          : 0;
+    width         : 100%;
+    height        : 2px;
+    background    : linear-gradient(transparent, rgba(0,255,65,0.06), transparent);
+    animation     : scanline 8s linear infinite;
+    pointer-events: none;
+    z-index       : 9999;
+  }
+
+  @keyframes scanline {
+    0%   { top: -2px;  }
+    100% { top: 100vh; }
+  }
+</style>
+</head>
+<body>
+
+<div id="reconnect-banner">⚠ LOST CONNECTION — RECONNECTING...</div>
+
+<!-- Header -->
+<div id="header">
+  <div class="logo">🛡 NIDS<span>&nbsp;/&nbsp;SIEM DASHBOARD v1.0</span></div>
+
+  <div class="hstats">
+    <div class="hstat">
+      <div class="val" id="h-packets">0</div>
+      <div class="lbl">PACKETS</div>
+    </div>
+    <div class="hstat alert-stat">
+      <div class="val" id="h-alerts">0</div>
+      <div class="lbl">ALERTS</div>
+    </div>
+    <div class="hstat">
+      <div class="val" id="h-tcp">0</div>
+      <div class="lbl">TCP</div>
+    </div>
+    <div class="hstat">
+      <div class="val" id="h-udp">0</div>
+      <div class="lbl">UDP</div>
+    </div>
+    <div class="hstat">
+      <div class="val" id="h-icmp">0</div>
+      <div class="lbl">ICMP</div>
+    </div>
+  </div>
+
+  <div id="live-indicator">
+    <div class="pulse connecting" id="pulse-dot"></div>
+    <span id="conn-status">CONNECTING...</span>
+  </div>
+</div>
+
+<!-- Grid -->
+<div id="grid">
+
+  <!-- Alert Panel -->
+  <div class="panel" id="alert-panel">
+    <div class="panel-title">
+      ⚠ ALERT FEED
+      <span class="count" id="alert-count-badge">0</span>
+    </div>
+    <div id="alert-list">
+      <div class="empty-msg" id="alert-empty">[ NO ALERTS — MONITORING... ]</div>
+    </div>
+  </div>
+
+  <!-- Packet Feed -->
+  <div class="panel" id="packet-panel">
+    <div class="panel-title">
+      ◉ LIVE PACKET FEED
+      <span class="count" id="pkt-count-badge">0</span>
+    </div>
+    <div id="packet-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>TIME</th>
+            <th>SRC IP</th>
+            <th>DST IP</th>
+            <th>PROTO</th>
+            <th>SRC PORT</th>
+            <th>DST PORT</th>
+            <th>SIZE</th>
+          </tr>
+        </thead>
+        <tbody id="packet-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Top Talkers -->
+  <div class="panel" id="talkers-panel">
+    <div class="panel-title">▲ TOP TALKERS</div>
+    <div id="talkers-list">
+      <div class="empty-msg" id="talkers-empty">[ WAITING FOR TRAFFIC... ]</div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="panel" id="charts-panel">
+    <div class="panel-title">◈ TRAFFIC ANALYSIS</div>
+    <div id="charts-inner">
+      <div class="chart-box" style="max-width:210px;">
+        <div class="chart-label">PROTOCOL DIST</div>
+        <canvas id="proto-chart"></canvas>
+      </div>
+      <div class="chart-box">
+        <div class="chart-label">PACKETS / SECOND</div>
+        <canvas id="timeline-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  SOCKET SETUP — auto-reconnect enabled
+// ═══════════════════════════════════════════════════════
+
+const socket = io({
+  reconnection        : true,       // auto reconnect if dropped
+  reconnectionAttempts: Infinity,   // keep trying forever
+  reconnectionDelay   : 1000,       // 1 second between attempts
+  reconnectionDelayMax: 3000,       // max 3 seconds
+  timeout             : 10000,
+});
+
+// ═══════════════════════════════════════════════════════
+//  KEEPALIVE — ping server every 20s to prevent idle drop
+// ═══════════════════════════════════════════════════════
+
+setInterval(() => {
+  if (socket.connected) {
+    socket.emit('ping_check');
+  }
+}, 20000);
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+
+const MAX_ROWS     = 150;
+const MAX_TIMELINE = 60;
+let   rowCount     = 0;
+
+// ═══════════════════════════════════════════════════════
+//  DOM REFS
+// ═══════════════════════════════════════════════════════
+
+const tbody        = document.getElementById('packet-tbody');
+const alertList    = document.getElementById('alert-list');
+const alertEmpty   = document.getElementById('alert-empty');
+const talkersDiv   = document.getElementById('talkers-list');
+const talkersEmpty = document.getElementById('talkers-empty');
+const banner       = document.getElementById('reconnect-banner');
+
+// ═══════════════════════════════════════════════════════
+//  CHART.JS SETUP
+// ═══════════════════════════════════════════════════════
+
+Chart.defaults.color       = '#447744';
+Chart.defaults.borderColor = '#003300';
+Chart.defaults.font.family = "'Courier New', monospace";
+Chart.defaults.font.size   = 10;
+
+// Protocol donut
+const protoChart = new Chart(
+  document.getElementById('proto-chart').getContext('2d'), {
+  type: 'doughnut',
+  data: {
+    labels  : ['TCP','UDP','ICMP','OTHER'],
+    datasets: [{
+      data           : [0,0,0,0],
+      backgroundColor: ['#0088ff','#aa44ff','#ffaa00','#447744'],
+      borderColor    : '#000',
+      borderWidth    : 2,
+    }]
+  },
+  options: {
+    responsive         : true,
+    maintainAspectRatio: false,
+    animation          : { duration: 400 },
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels  : { color: '#447744', boxWidth: 10, padding: 8 }
+      }
+    }
+  }
+});
+
+// Timeline line chart
+const timeChart = new Chart(
+  document.getElementById('timeline-chart').getContext('2d'), {
+  type: 'line',
+  data: {
+    labels  : [],
+    datasets: [{
+      label          : 'pkts/s',
+      data           : [],
+      borderColor    : '#00ff41',
+      backgroundColor: 'rgba(0,255,65,0.07)',
+      borderWidth    : 1.5,
+      pointRadius    : 0,
+      fill           : true,
+      tension        : 0.3,
+    }]
+  },
+  options: {
+    responsive         : true,
+    maintainAspectRatio: false,
+    animation          : { duration: 150 },
+    plugins : { legend: { display: false } },
+    scales  : {
+      x: {
+        ticks: { maxTicksLimit: 8, color: '#447744', maxRotation: 0 },
+        grid : { color: '#111' },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: { color: '#447744' },
+        grid : { color: '#111' },
+      }
+    }
+  }
+});
+
+// ═══════════════════════════════════════════════════════
+//  CONNECTION EVENTS
+// ═══════════════════════════════════════════════════════
+
+socket.on('connect', () => {
+  document.getElementById('pulse-dot').className    = 'pulse';
+  document.getElementById('conn-status').textContent = 'LIVE';
+  banner.style.display = 'none';
+  console.log('[✓] WebSocket connected — sid:', socket.id);
+});
+
+socket.on('disconnect', (reason) => {
+  document.getElementById('pulse-dot').className    = 'pulse offline';
+  document.getElementById('conn-status').textContent = 'DISCONNECTED';
+  banner.style.display = 'block';
+  console.warn('[!] Disconnected:', reason);
+});
+
+socket.on('reconnecting', (attempt) => {
+  document.getElementById('pulse-dot').className    = 'pulse connecting';
+  document.getElementById('conn-status').textContent = `RECONNECTING (${attempt})`;
+});
+
+socket.on('reconnect', () => {
+  document.getElementById('pulse-dot').className    = 'pulse';
+  document.getElementById('conn-status').textContent = 'LIVE';
+  banner.style.display = 'none';
+  console.log('[✓] Reconnected');
+});
+
+// ═══════════════════════════════════════════════════════
+//  DATA EVENTS
+// ═══════════════════════════════════════════════════════
+
+// On first connect — populate with existing data
+socket.on('initial_state', (data) => {
+  console.log('[✓] Initial state received:', data.packet_count, 'packets');
+  updateHeaderStats(data);
+  updateProtocolChart(data.protocol_counts);
+  updateTopTalkers(data.top_talkers);
+  if (data.recent_packets) data.recent_packets.forEach(addPacketRow);
+  if (data.recent_alerts)  data.recent_alerts.forEach(addAlertItem);
+  if (data.timeline)       data.timeline.forEach(addTimelineTick);
+});
+
+// Live packet — fires for EVERY packet captured
+socket.on('new_packet', (pkt) => {
+  addPacketRow(pkt);
+  const el = document.getElementById('h-packets');
+  el.textContent = parseInt(el.textContent || 0) + 1;
+  document.getElementById('pkt-count-badge').textContent = el.textContent;
+});
+
+// Live alert — fires immediately when detection triggers
+socket.on('new_alert', (alert) => {
+  addAlertItem(alert);
+  const el = document.getElementById('h-alerts');
+  el.textContent = parseInt(el.textContent || 0) + 1;
+  document.getElementById('alert-count-badge').textContent = el.textContent;
+  flashHeader();
+});
+
+// Stats update every 10 packets
+socket.on('stats_update', (data) => {
+  updateHeaderStats(data);
+  updateTopTalkers(data.top_talkers);
+  updateProtocolChart(data.protocol_counts);
+});
+
+// Timeline tick every second
+socket.on('timeline_tick', (tick) => {
+  addTimelineTick(tick);
+});
+
+// ═══════════════════════════════════════════════════════
+//  RENDERERS
+// ═══════════════════════════════════════════════════════
+
+function addPacketRow(pkt) {
+  const tr  = document.createElement('tr');
+  tr.innerHTML =
+    `<td class="time">${pkt.timestamp}</td>` +
+    `<td class="ip">${pkt.src_ip}</td>` +
+    `<td class="ip">${pkt.dst_ip}</td>` +
+    `<td class="proto-${pkt.protocol}">${pkt.protocol}</td>` +
+    `<td class="port">${pkt.src_port ?? '—'}</td>` +
+    `<td class="port">${pkt.dst_port ?? '—'}</td>` +
+    `<td class="size">${pkt.size}B</td>`;
+
+  tbody.insertBefore(tr, tbody.firstChild);
+  rowCount++;
+
+  if (rowCount > MAX_ROWS) {
+    tbody.removeChild(tbody.lastChild);
+    rowCount--;
+  }
+}
+
+function addAlertItem(alert) {
+  if (alertEmpty) alertEmpty.style.display = 'none';
+
+  const div = document.createElement('div');
+  div.className = `alert-item ${alert.severity}`;
+  div.innerHTML =
+    `<div class="alert-top">` +
+      `<span class="alert-type">${alert.attack_type}</span>` +
+      `<span class="sev-badge ${alert.severity}">${alert.severity}</span>` +
+    `</div>` +
+    `<div>` +
+      `<span class="alert-src">${alert.src_ip}</span>` +
+      `<span class="alert-time">&nbsp;&nbsp;${alert.timestamp}</span>` +
+    `</div>` +
+    `<div class="alert-desc">${alert.description}</div>`;
+
+  alertList.insertBefore(div, alertList.firstChild);
+
+  const items = alertList.querySelectorAll('.alert-item');
+  if (items.length > 50) items[items.length - 1].remove();
+}
+
+function updateTopTalkers(talkers) {
+  if (!talkers || talkers.length === 0) return;
+  if (talkersEmpty) talkersEmpty.style.display = 'none';
+
+  const max = talkers[0]?.count || 1;
+  talkersDiv.innerHTML = '';
+
+  talkers.forEach((t, i) => {
+    const pct = Math.round((t.count / max) * 100);
+    const row = document.createElement('div');
+    row.className = 'talker-row';
+    row.innerHTML =
+      `<div class="talker-ip">${t.ip}</div>` +
+      `<div class="talker-bar-wrap">` +
+        `<div class="talker-bar ${i === 0 ? 'top' : ''}" style="width:${pct}%"></div>` +
+      `</div>` +
+      `<div class="talker-count">${t.count}</div>`;
+    talkersDiv.appendChild(row);
+  });
+}
+
+function updateProtocolChart(counts) {
+  if (!counts) return;
+  protoChart.data.datasets[0].data = [
+    counts.TCP   || 0,
+    counts.UDP   || 0,
+    counts.ICMP  || 0,
+    counts.OTHER || 0,
+  ];
+  protoChart.update();
+}
+
+function addTimelineTick(tick) {
+  const labels = timeChart.data.labels;
+  const data   = timeChart.data.datasets[0].data;
+
+  labels.push(tick.time);
+  data.push(tick.count);
+
+  if (labels.length > MAX_TIMELINE) {
+    labels.shift();
+    data.shift();
+  }
+  timeChart.update();
+}
+
+function updateHeaderStats(data) {
+  if (data.packet_count !== undefined) {
+    document.getElementById('h-packets').textContent     = data.packet_count;
+    document.getElementById('pkt-count-badge').textContent = data.packet_count;
+  }
+  if (data.alert_count !== undefined) {
+    document.getElementById('h-alerts').textContent        = data.alert_count;
+    document.getElementById('alert-count-badge').textContent = data.alert_count;
+  }
+  if (data.protocol_counts) {
+    document.getElementById('h-tcp').textContent  = data.protocol_counts.TCP   || 0;
+    document.getElementById('h-udp').textContent  = data.protocol_counts.UDP   || 0;
+    document.getElementById('h-icmp').textContent = data.protocol_counts.ICMP  || 0;
+  }
+}
+
+function flashHeader() {
+  const h = document.getElementById('header');
+  h.style.borderBottomColor = 'var(--red)';
+  h.style.boxShadow         = '0 2px 12px rgba(255,51,51,0.3)';
+  setTimeout(() => {
+    h.style.borderBottomColor = 'var(--border)';
+    h.style.boxShadow         = 'none';
+  }, 800);
+}
+</script>
+</body>
+</html>
