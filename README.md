@@ -50,7 +50,7 @@ pip install -r requirements.txt
 ```
 
 ## Author
-Migdad latif shaw —(https://github.com/Migdad-latif/network-ids)
+Migdad latif shaw-(https://github.com/Migdad-latif/network-ids)
 
 ## License
 MIT License
