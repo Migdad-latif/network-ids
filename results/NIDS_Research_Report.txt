@@ -6,7 +6,7 @@
 
 ========================================================================
 
-  Author      : Migdad Latif Shaw
+   Author      : Migdad Latif Shaw
   Institution : The open university Bsc CyberSecurity
   Date        : March 11, 2026
   Repository  : https://github.com/Migdad-latif/network-ids
@@ -27,8 +27,8 @@
   The system was evaluated against four real Nmap attack scenarios
   including SYN stealth scans, service version probes, ICMP ping sweeps,
   and aggressive full-port scans. Across all tests, the system raised
-  55 total alerts — 5 from signature detection and
-  50 from the ML anomaly detector — demonstrating effective
+  50 total alerts — 3 from signature detection and
+  47 from the ML anomaly detector — demonstrating effective
   coverage of both known and behaviorally anomalous traffic patterns.
 
 
@@ -177,13 +177,7 @@
 6. EVALUATION AND RESULTS
 ------------------------------------------------------------------------
 
-  6.1 Test Environment
-    Defender PC  : AMD Ryzen 9 3900X 12-Core Processor 3.79 GHz,64 GB Ram, windows 11
-    Attacker PC  : 13th Gen intel(R)Core(TM)i9-13900H(2.60GHz), windows 11
-    Network      : Home LAN 
-    Nmap version :  Nmap version 7.95
-
-  6.2 Attack Test Results
+   6.2 Attack Test Results
 
     Test 1 — SYN Stealth Scan (nmap -sS)
     Packets captured  : Packets captured : 483
@@ -210,9 +204,9 @@
     ML anomalies      :39
 
   6.3 Summary
-    Total signature alerts : 15
-    Total ML alerts        : 177
-    Combined total         : 192
+    Total signature alerts : 3
+    Total ML alerts        : 47
+    Combined total         : 50
 
   6.4 Limitations and Observations
 
