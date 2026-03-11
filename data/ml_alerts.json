@@ -1,0 +1,242 @@
+[
+  {
+    "timestamp": "2026-03-11 00:27:54",
+    "attack_type": "ML_ANOMALY",
+    "severity": "CRITICAL",
+    "src_ip": "192.168.1.93",
+    "dst_ip": "239.255.255.250",
+    "protocol": "UDP",
+    "dst_port": "1900.0",
+    "packet_size": 212,
+    "description": "ML anomaly detected. Isolation Forest score: -0.1527. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.1527,
+      "threshold": 0.0,
+      "packet_index": 0
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:27:55",
+    "attack_type": "ML_ANOMALY",
+    "severity": "LOW",
+    "src_ip": "192.168.1.214",
+    "dst_ip": "142.250.129.94",
+    "protocol": "UDP",
+    "dst_port": "443.0",
+    "packet_size": 149,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0446. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0446,
+      "threshold": 0.0,
+      "packet_index": 1
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:27:55",
+    "attack_type": "ML_ANOMALY",
+    "severity": "LOW",
+    "src_ip": "142.250.129.94",
+    "dst_ip": "192.168.1.214",
+    "protocol": "UDP",
+    "dst_port": "61345.0",
+    "packet_size": 157,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0285. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0285,
+      "threshold": 0.0,
+      "packet_index": 3
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:27:59",
+    "attack_type": "ML_ANOMALY",
+    "severity": "LOW",
+    "src_ip": "192.168.1.214",
+    "dst_ip": "52.202.243.243",
+    "protocol": "TCP",
+    "dst_port": "9000.0",
+    "packet_size": 54,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0407. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0407,
+      "threshold": 0.0,
+      "packet_index": 20
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:27:59",
+    "attack_type": "ML_ANOMALY",
+    "severity": "MEDIUM",
+    "src_ip": "104.18.41.41",
+    "dst_ip": "192.168.1.214",
+    "protocol": "UDP",
+    "dst_port": "64539.0",
+    "packet_size": 77,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0608. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0608,
+      "threshold": 0.0,
+      "packet_index": 21
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:28:00",
+    "attack_type": "ML_ANOMALY",
+    "severity": "LOW",
+    "src_ip": "104.18.41.41",
+    "dst_ip": "192.168.1.214",
+    "protocol": "UDP",
+    "dst_port": "64539.0",
+    "packet_size": 668,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0444. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0444,
+      "threshold": 0.0,
+      "packet_index": 23
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:28:02",
+    "attack_type": "ML_ANOMALY",
+    "severity": "MEDIUM",
+    "src_ip": "192.168.1.67",
+    "dst_ip": "192.168.1.255",
+    "protocol": "UDP",
+    "dst_port": "27036.0",
+    "packet_size": 208,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0967. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0967,
+      "threshold": 0.0,
+      "packet_index": 27
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:28:02",
+    "attack_type": "ML_ANOMALY",
+    "severity": "LOW",
+    "src_ip": "162.247.241.14",
+    "dst_ip": "192.168.1.214",
+    "protocol": "TCP",
+    "dst_port": "58097.0",
+    "packet_size": 504,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0267. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0267,
+      "threshold": 0.0,
+      "packet_index": 29
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:28:02",
+    "attack_type": "ML_ANOMALY",
+    "severity": "LOW",
+    "src_ip": "192.168.1.214",
+    "dst_ip": "162.247.243.29",
+    "protocol": "TCP",
+    "dst_port": "443.0",
+    "packet_size": 1245,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0214. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0214,
+      "threshold": 0.0,
+      "packet_index": 37
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:29:11",
+    "attack_type": "ML_ANOMALY",
+    "severity": "LOW",
+    "src_ip": "192.168.1.214",
+    "dst_ip": "224.0.0.22",
+    "protocol": "OTHER",
+    "dst_port": "nan",
+    "packet_size": 62,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0237. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0237,
+      "threshold": 0.0,
+      "packet_index": 94
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:29:12",
+    "attack_type": "ML_ANOMALY",
+    "severity": "LOW",
+    "src_ip": "104.18.41.41",
+    "dst_ip": "192.168.1.214",
+    "protocol": "UDP",
+    "dst_port": "64539.0",
+    "packet_size": 1242,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0165. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0165,
+      "threshold": 0.0,
+      "packet_index": 95
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:29:12",
+    "attack_type": "ML_ANOMALY",
+    "severity": "LOW",
+    "src_ip": "104.18.41.41",
+    "dst_ip": "192.168.1.214",
+    "protocol": "UDP",
+    "dst_port": "64539.0",
+    "packet_size": 1242,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0165. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0165,
+      "threshold": 0.0,
+      "packet_index": 96
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:29:12",
+    "attack_type": "ML_ANOMALY",
+    "severity": "LOW",
+    "src_ip": "162.247.241.14",
+    "dst_ip": "192.168.1.214",
+    "protocol": "TCP",
+    "dst_port": "58097.0",
+    "packet_size": 504,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0290. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.029,
+      "threshold": 0.0,
+      "packet_index": 105
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:29:12",
+    "attack_type": "ML_ANOMALY",
+    "severity": "LOW",
+    "src_ip": "162.247.243.29",
+    "dst_ip": "192.168.1.214",
+    "protocol": "TCP",
+    "dst_port": "62568.0",
+    "packet_size": 54,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0005. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0005,
+      "threshold": 0.0,
+      "packet_index": 107
+    }
+  },
+  {
+    "timestamp": "2026-03-11 00:29:12",
+    "attack_type": "ML_ANOMALY",
+    "severity": "LOW",
+    "src_ip": "162.247.243.29",
+    "dst_ip": "192.168.1.214",
+    "protocol": "TCP",
+    "dst_port": "62568.0",
+    "packet_size": 460,
+    "description": "ML anomaly detected. Isolation Forest score: -0.0026. Packet deviates significantly from baseline normal traffic pattern.",
+    "evidence": {
+      "anomaly_score": -0.0026,
+      "threshold": 0.0,
+      "packet_index": 109
+    }
+  }
+]
