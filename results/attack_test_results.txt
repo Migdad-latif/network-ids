@@ -1,0 +1,40 @@
+======================================================================
+NIDS ATTACK TEST RESULTS
+======================================================================
+Date of testing : 11/03/2026
+Defender IP     : 192.168.1.x
+Attacker IP     : 192.168.1.y
+
+──────────────────────────────────────────────────────────────────────
+Test 1 — SYN Stealth Scan (nmap -sS)
+    Packets captured  : Packets captured : 483
+    Alerts raised     : Alerts raised : 3
+    Signatures fired  :  PORT_SCAN, SENSITIVE_PORT_ACCESS
+    ML anomalies      : 49
+
+──────────────────────────────────────────────────────────────────────
+ Test 2 — Service Version Scan (nmap -sV)
+    Packets captured  : 492
+    Alerts raised     : 3
+    Signatures fired  : SENSITIVE_PORT_ACCESS, PORT_SCAN
+    ML anomalies      : 47
+
+──────────────────────────────────────────────────────────────────────
+Test 3 — Ping Sweep (nmap -sn)
+    Packets captured  : 405
+    Alerts raised     : 1
+    Signatures fired  : SENSITIVE_PORT_ACCESS, PORT_SCAN
+    ML anomalies      : 41
+
+──────────────────────────────────────────────────────────────────────
+  Test 4 — Aggressive Full Scan (nmap -A)
+    Packets captured  : 500
+    Alerts raised     : 8
+    Signatures fired  : All five signatures
+    ML anomalies      :39
+
+──────────────────────────────────────────────────────────────────────
+ML ANOMALY DETECTION SUMMARY
+Total anomalies flagged :177
+PCA cluster separation  : visible / not visible
+Score timeline dips     : visible / not visible
